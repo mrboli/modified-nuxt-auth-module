@@ -36,6 +36,7 @@ export default {
       // Update localStorage
       if (process.browser && localStorage) {
         if (token) {
+          console.log('setting localstorage token:', token)
           localStorage.setItem('nuxt::auth::token', token)
         } else {
           localStorage.removeItem('nuxt::auth::token')
@@ -46,6 +47,7 @@ export default {
       if (process.browser) {
         // ...Browser
         if (token) {
+          console.log('settting cookie', token)
           Cookies.set('token', token)
         } else {
           Cookies.remove('token')
@@ -68,8 +70,9 @@ export default {
       if (!token) {
         const cookieStr = process.browser ? document.cookie : this.$ctx.req.headers.cookie
         const cookies = Cookie.parse(cookieStr || '') || {}
-        console.log(cookieStr, cookies)
-        token = cookies.token
+        
+        // TODO Server: get cookie and set
+        token = cookies.access_token
       }
 
       if (token) {
@@ -115,6 +118,9 @@ export default {
 
       // Send credentials to API
       let user = await this.$axios.$post(endpoint, fields)
+      // TODO: Fix this fetch call cahin so user is done separately Fetch Token / User??
+      await dispatch('fetch')
+      
       // Fetch authenticated user
       commit('SET_USER', user)
 
