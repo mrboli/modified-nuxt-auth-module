@@ -1,5 +1,6 @@
 import Cookie from 'cookie'
 import Cookies from 'js-cookie'
+import 'whatwg-fetch'
 
 export default {
   namespaced: true,
@@ -67,6 +68,7 @@ export default {
       if (!token) {
         const cookieStr = process.browser ? document.cookie : this.$ctx.req.headers.cookie
         const cookies = Cookie.parse(cookieStr || '') || {}
+        console.log(cookieStr, cookies)
         token = cookies.token
       }
 
@@ -100,15 +102,56 @@ export default {
 
     // Login
     async login ({ commit, dispatch }, { fields, endpoint = 'auth/login', session = false } = {}) {
+      // // Send credentials to API
+      // let tokenData = await this.$axios.post(endpoint, fields)
+      // let token = tokenData.token || tokenData.id_token
+
+      // // Update new token
+      // await dispatch('updateToken', token)
+
+      // // Fetch authenticated user
+      // await dispatch('fetch')
+
+
       // Send credentials to API
-      let tokenData = await this.$axios.$post(endpoint, fields)
-      let token = tokenData.token || tokenData.id_token
-
-      // Update new token
-      await dispatch('updateToken', token)
-
+      let user = await this.$axios.$post(endpoint, fields)
       // Fetch authenticated user
-      await dispatch('fetch')
+      commit('SET_USER', user)
+
+
+      //let tokenData = await this.$axios.post(endpoint, fields)
+        //, {
+        //headers: {
+          //'Access-Control-Expose-Headers': 'Authorization'
+        //},
+        //withCredentials: true
+      //})
+      //fetch('http://138.197.137.65:8000/api/v0/login', {
+        //method: 'post',
+        //mode: 'cors',
+        //body: JSON.stringify({ username: 'boli', password: 'servdtest' })
+      //})
+        //.then(response => console.log(response.headers.get('Authorization')))
+
+
+      //let headerAuth
+      //fetch('http://138.197.137.65:8000/api/v0/login', {
+        //method: 'post',
+        //mode: 'cors',
+        //body: JSON.stringify(fields)
+      //})
+        //.then(async (response) => {
+          //headerAuth = response.headers.get('Authorization')
+          //console.log(headerAuth)
+
+          //let token = headerAuth
+
+          //// Update new token
+          //await dispatch('updateToken', token)
+
+          //// Fetch authenticated user
+          //await dispatch('fetch')
+        //})
     },
 
     // Logout
